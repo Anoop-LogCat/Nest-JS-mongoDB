@@ -9,18 +9,19 @@ export class UserService {
     constructor(@InjectModel('usersCollection') private readonly mongoUserModel:Model<UserDocument>){}
 
     async userCreation(user:UserModel){
+        let result:UserDocument;
         try{
-            await this.mongoUserModel.insertMany({
+            result = new this.mongoUserModel({
                 username:user.username,
                 email:user.email,
                 password:user.password,
                 phone:user.phone,
                 profileImage:user.profileImage
             })
+            return "New User added with ID : "+(await result.save())._id           
         }catch(e){
             throw new HttpException('Insertion failed',HttpStatus.FORBIDDEN)
         }
-        return "New User added with ID : "+user.id
     }
 
     async updateUserInfo(user:any,uid:string){
