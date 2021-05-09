@@ -12,15 +12,15 @@ export class UserController {
 
     constructor(private service: UserService) { }
 
+    @Post('signUp')
+    async userCreation(@Body() user: UserModel) {
+        return await this.service.userCreation(user)
+    }
+
     @UseGuards(LocalGuard)
     @Post('login')
     async login(@Req() req: Request) {
         return req.user
-    }
-
-    @Post()
-    async userCreation(@Body() user: any) {
-        return await this.service.userCreation(user as UserModel)
     }
 
     @UseGuards(JwtGuard)

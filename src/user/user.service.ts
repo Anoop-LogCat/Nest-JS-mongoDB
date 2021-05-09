@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import { UserDocument, UserModel } from './user.schema';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as hashing from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -10,11 +11,12 @@ export class UserService {
 
     async userCreation(user: UserModel) {
         let result: UserDocument;
+        const hashedPassword = await hashing.hash(user.password, 10)
         try {
             result = new this.mongoUserModel({
                 username: user.username,
                 email: user.email,
-                password: user.password,
+                password: hashedPassword,
                 phone: user.phone,
                 profileImage: user.profileImage
             })
@@ -42,8 +44,7 @@ export class UserService {
     }
 
     async findOne(username: string) {
-        try { return (await this.mongoUserModel.findOne({ username: username }).exec()) }
-        catch (e) { throw new HttpException('no user in this id', HttpStatus.FORBIDDEN) }
+        return await this.mongoUserModel.findOne({ username: username }).exec()
     }
 
     async deleteUser(id: string) {
