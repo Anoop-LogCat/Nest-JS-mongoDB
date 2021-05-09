@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose'
   imports: [
     AuthModule,
     UserModule,
-    MongooseModule.forRoot('mongodb+srv://admin:admin007@core.u9v4l.mongodb.net/database?retryWrites=true&w=majority')
+    MongooseModule.forRoot('provide mongo db url')
   ],
   exports: [AuthModule]
 })
