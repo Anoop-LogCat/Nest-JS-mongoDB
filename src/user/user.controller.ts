@@ -1,38 +1,51 @@
-import { Body, Delete, Get, Patch, Post } from '@nestjs/common';
+import { Body, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UserModel } from './user.schema';
 import { UserService } from './user.service';
+import { Request } from 'express'
+import { LocalGuard } from 'src/authentication/guard/local.guard';
+import { JwtGuard } from 'src/authentication/guard/jwt.guard';
 
 @Controller('user')
 export class UserController {
 
-    constructor(private service:UserService){}
+    constructor(private service: UserService) { }
+
+    @UseGuards(LocalGuard)
+    @Post('login')
+    async login(@Req() req: Request) {
+        return req.user
+    }
 
     @Post()
-    async userCreation(@Body() user:any){
+    async userCreation(@Body() user: any) {
         return await this.service.userCreation(user as UserModel)
     }
 
+    @UseGuards(JwtGuard)
     @Patch(':id')
-    async updateUserInfo(@Param('id') id:string,@Body() updateParams:any){
-        return await this.service.updateUserInfo(updateParams,id)
+    async updateUserInfo(@Param('id') id: string, @Body() updateParams: any) {
+        return await this.service.updateUserInfo(updateParams, id)
     }
 
+    @UseGuards(JwtGuard)
     @Get()
-    async getUsers(){
+    async getUsers() {
         const allUsers = await this.service.getUsers()
         return allUsers
     }
 
+    @UseGuards(JwtGuard)
     @Get(':id')
-    async getOneUser(@Param('id') id:string){
+    async getOneUser(@Param('id') id: string) {
         const User = await this.service.getOneUser(id)
         return User
     }
 
+    @UseGuards(JwtGuard)
     @Delete(':id')
-    async deleteUser(@Param('id') id:string){
+    async deleteUser(@Param('id') id: string) {
         return await (this.service.deleteUser(id))
     }
 }
