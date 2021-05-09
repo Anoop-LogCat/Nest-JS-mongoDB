@@ -6,11 +6,24 @@ import { UserService } from './user.service';
 import { Request } from 'express'
 import { LocalGuard } from 'src/authentication/guard/local.guard';
 import { JwtGuard } from 'src/authentication/guard/jwt.guard';
+import { GoogleGuard } from 'src/authentication/guard/google.guard';
 
 @Controller('user')
 export class UserController {
 
-    constructor(private service: UserService) { }
+    constructor(private readonly service: UserService) { }
+
+    @Get('google')
+    @UseGuards(GoogleGuard)
+    async googleAuth(@Req() req: Request) {
+
+    }
+
+    @Get('google/callback/response')
+    @UseGuards(GoogleGuard)
+    async googleAuthCallBack(@Req() req: Request) {
+        return this.service.googleService(req)
+    }
 
     @Post('signUp')
     async userCreation(@Body() user: UserModel) {
@@ -24,7 +37,7 @@ export class UserController {
     }
 
     @UseGuards(JwtGuard)
-    @Patch(':id')
+    @Post(':id')
     async updateUserInfo(@Param('id') id: string, @Body() updateParams: any) {
         return await this.service.updateUserInfo(updateParams, id)
     }
